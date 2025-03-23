@@ -1,1 +1,1 @@
-print ("Yes yes dop dop")
+print("Yes yes dop dop")
