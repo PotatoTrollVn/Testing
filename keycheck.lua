@@ -1,15 +1,27 @@
 --! SERVER-VERIFIED SECTION !--
-local function verify(token, nonce)
-    local response = game:HttpGet(
-        "https://api.platoboost.com/check_script_token?"..
-        "token="..token.."&nonce="..nonce
-    )
-    return lDecode(response).valid
+local function verifyToken(token, hwid)
+    -- First local check
+    if not (_VERIFICATION and _VERIFICATION.token == token) then
+        return false
+    end
+    
+    -- Second server check
+    local response = game:HttpGet("https://api.platoboost.com/verify_script_token?"..
+        "token="..token..
+        "&hwid="..hwid..
+        "&key=".._VERIFICATION.key)
+    
+    local data = game:GetService("HttpService"):JSONDecode(response)
+    return data.valid
 end
 
-local token, nonce = ... -- From loader
-assert(verify(token, nonce), "Script verification failed"
+-- Verify before execution
+assert(
+    verifyToken(_VERIFICATION.token, _VERIFICATION.hwid),
+    "Token verification failed"
+)
 
--- Only executes if both verifications passed
--- MAIN SCRIPT CONTENT HERE !--
+-- Only runs if both checks pass
+print("Dual verification successful! Running main script...")
+-- [YOUR MAIN SCRIPT CODE HERE]
 print("Yes yes dop dop")
